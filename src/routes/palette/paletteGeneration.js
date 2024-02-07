@@ -70,6 +70,16 @@ export function generatePalette(paletteColors) {
 		);
 	}
 
+	(async () => {
+		const bitmap = lookupTable;
+		const osc = new OffscreenCanvas(bitmap.width, bitmap.height);
+		const ctx = osc.getContext('2d');
+		ctx?.putImageData(bitmap, 0, 0);
+		const blob = await osc.convertToBlob({ type: 'image/png' });
+		const url = URL.createObjectURL(blob);
+		console.log({ url });
+	})();
+
 	return lookupTable;
 }
 
