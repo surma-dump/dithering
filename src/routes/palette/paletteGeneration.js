@@ -1,3 +1,5 @@
+import { deltaEsrgbSquared } from '$lib/math/colorspaces.js';
+
 /**
  * @param {import("../utils.js").RGB[]} paletteColors
  * @returns {ImageData}
@@ -45,15 +47,14 @@ export function generatePalette(paletteColors) {
 		const b = (i >> 8) & FOUR_BIT_MASK; //Get the first 4 bits
 
 		//Loop over all available colors and find the closest one
-		//TODO: Use a better color-space for this
 		let closestIndex = 0;
 		let closestDistanceSquared = Number.MAX_SAFE_INTEGER;
 
 		for (let c = 0; c < paletteColors.length; c++) {
-			const distanceSquared =
-				((r << 4) - colors[c << 2]) ** 2 +
-				((g << 4) - colors[(c << 2) | 0b01]) ** 2 +
-				((b << 4) - colors[(c << 2) | 0b10]) ** 2;
+			const distanceSquared = deltaEsrgbSquared(
+				[r << 4, g << 4, b << 4],
+				[colors[c << 2], colors[(c << 2) | 0b01], colors[(c << 2) | 0b10]]
+			);
 
 			if (distanceSquared < closestDistanceSquared) {
 				closestIndex = c;
